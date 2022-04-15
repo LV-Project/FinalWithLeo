@@ -1,6 +1,6 @@
 package receipts;
 
-import ConsoleInterface.PurchaseOptions;
+
 import warehouse.Supply;
 
 public class ReceiptFormat extends ReceiptImpl {

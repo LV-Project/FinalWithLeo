@@ -1,9 +1,17 @@
 package app;
 
-import ConsoleInterface.FormulaCommand;
-import ConsoleInterface.PurchaseCommand;
-import ConsoleInterface.WarehouseCommands;
+import ConsoleInterface.AllMenus;
+import ConsoleInterface.FOptions.CheckStatusFormula;
+import ConsoleInterface.FOptions.CreateFormulaName;
+import ConsoleInterface.FOptions.DeleteFormula;
+import ConsoleInterface.MenuOptions;
+import ConsoleInterface.POptions.CheckAvailability;
+import ConsoleInterface.POptions.ExtractingProducts;
+import ConsoleInterface.WOprions.*;
+
 import formulas.*;
+import receipts.ReceiptFormat;
+import receipts.Receipts;
 import warehouse.*;
 import java.util.*;
 
@@ -16,76 +24,123 @@ public class MyApp {
     static Formulas formula = formulas.create();
     static Warehouse warehouse = factory.create();
     static Scanner sc = new Scanner(System.in);
-
-
+    static AllMenus menuOne = new MenuOptions();
+    static String something;
+    static int valueSomething;
+    static void printReceipt (Receipts receipt, HashMap < String, Deque < Supply >> product ){
+        System.out.println(receipt.print(product));
+    }
     public static void main(String[] args) {
         initializeValues();
-        WarehouseCommands menuW = new WarehouseCommands(warehouse);
-        FormulaCommand menuF = new FormulaCommand(formula);
-        PurchaseCommand menuP = new PurchaseCommand(warehouse,formula);
+        initializeMenu();
 
         int option = 0;
-        //warehouse.createSupply("Corn");
-        System.out.println();
-        while (option !=5){
+        int optionTwo = 0;
+
+
+        int principalMenuLength = menuOne.getMenus().get(0).size();
+        int warehouseMenuLength = menuOne.getMenus().get(1).size();
+        int formulasMenuLength = menuOne.getMenus().get(2).size();
+        int purchaseMenuLength = menuOne.getMenus().get(3).size();
+
+        while (option != principalMenuLength ){
             System.out.println("================================");
             System.out.println("|      FEED FACTORY MENU        |");
             System.out.println("================================");
             System.out.println("| Options:                      |");
-            System.out.println("|    1. Warehouse               |");
-            System.out.println("|    2. Formulas                |");
-            System.out.println("|    3. Purchases               |");
-            System.out.println("|    4. Reports                 |");
-            System.out.println("|    5. Exit System             |");
+
+            menuOne.getMenus().get(0).stream().forEach(System.out::println);
+
             System.out.println("=================================");
             System.out.println("Please enter your option: ");
             System.out.println("=================================");
 
             option = sc.nextInt();
-            if(option==1){
-                menuW.select(1);
-            }else if(option==2){
-                menuF.select(1);
-            }else if(option==3){
-                menuP.select(1);
+
+            while (optionTwo!= menuOne.getMenus().get(option).size()) {
+                for (int in : menuOne.getMenus().keySet()) {
+                    if (option == in) {
+                        System.out.println("================================");
+                        System.out.println("|      FEED FACTORY MENU        |");
+                        System.out.println("================================");
+                        System.out.println("| Options:                      |");
+
+                        menuOne.getMenus().get(in).stream().forEach(System.out::println);
+
+                        System.out.println("=================================");
+                        System.out.println("Please enter your option: ");
+                        System.out.println("=================================");
+                        optionTwo = sc.nextInt();
+
+                        subMenuManager(option, optionTwo);
+
+                    }
+                }
             }
-
-
         }
     }
-        //printMenu(new MenuFormat());
 
+    static void subMenuManager(int subMenu, int option){
+        if(subMenu==1 && option ==1){
 
-//        printReport(new ConsoleReportFirstFormat(), warehouse);
-//
-////        checkExistence("f1");
-//       warehouse.updateWarehouse("corn", 5);
-////       warehouse.deleteSupply("corn");
-//        printReport(new ConsoleReportFirstFormat(), warehouse);
-//
-//
-//        warehouse.updateWarehouse("corn",21);
-//        printReport(new ConsoleReportFirstFormat(), warehouse);
+            CheckStatus WOptionOne = new CheckStatus(warehouse);
+            WOptionOne.checking();
 
-//        HashMap<String, Deque<Supply>> firstReceipt = extractingProducts("F1", 5);
-//
-//        printReport(new ConsoleReportFirstFormat(), warehouse);
-//        printReceipt(new ReceiptFormat(), firstReceipt);
-//       }
-//    private static int printMenu(CommandInterface myInterface) {
-//        System.out.println(myInterface.InteractiveInterface());
-//        int option=0;
-//        option= Integer.parseInt(sc.nextLine());
-//        return option;
-//    }
+        } else if(subMenu==1 && option==2){
 
-//        private static void printReport (Reports report, Warehouse warehouse){
-//            System.out.println(report.printReport(warehouse));
-//        }
-//        private static void printReceipt (Receipts receipt, HashMap < String, Deque < Supply >> product ){
-//            System.out.println(receipt.print(product));
-//        }
-//
+            CreateSupply WOptionTwo = new CreateSupply(warehouse);
+            WOptionTwo.createSupplyStorage();
+
+        } else if(subMenu==1 && option==3){
+
+            AddToStorage WOptionThree = new AddToStorage(warehouse);
+            WOptionThree.addSupply();
+
+        } else if(subMenu==1 && option==4){
+
+            DeleteSupply WOptionFour = new DeleteSupply(warehouse);
+            WOptionFour.deleteSupply();
+
+        }else if(subMenu==2 && option==1){
+
+            CheckStatusFormula FOptionOne = new CheckStatusFormula(formula);
+            FOptionOne.checking();
+
+        }else if(subMenu==2 && option==2){
+
+            CreateFormulaName FOptionTwo = new CreateFormulaName(formula);
+            FOptionTwo.createFormula();
+
+        }else if(subMenu==2 && option==3){
+            DeleteFormula FOptionThree = new DeleteFormula(formula);
+            FOptionThree.deleteFormula();
+        } else if(subMenu==3 && option==1){
+            CheckAvailability POptionOne = new CheckAvailability(warehouse, formula);
+            sc.nextLine();
+            System.out.println("Please enter the name of the formula");
+            something=sc.nextLine();
+            System.out.println("Please enter the amount of formulas do you want");
+            valueSomething= sc.nextInt();
+            POptionOne.checking(something,valueSomething);
+        }
+        else if(subMenu==3 && option==2){
+            CheckAvailability POptionOne = new CheckAvailability(warehouse, formula);
+            sc.nextLine();
+            System.out.println("Please enter the name of the formula");
+            something=sc.nextLine();
+            System.out.println("Please enter the amount of formulas do you want");
+            valueSomething= sc.nextInt();
+
+            boolean answer = POptionOne.checking(something,valueSomething);
+            ExtractingProducts POptionTwo = new ExtractingProducts(warehouse, formula, answer);
+
+            HashMap<String, Deque<Supply>> product = POptionTwo.extractingProducts(something,valueSomething);
+            printReceipt(new ReceiptFormat(), product);
+
+        }
+
+    }
+
         static void initializeValues() {
 
 
@@ -134,6 +189,30 @@ public class MyApp {
             formula.addIngredientToFormula("f3", "Sorghum", 2);
             formula.addIngredientToFormula("f3", "Mineral supplements", 4);
 
+        }
+        static void initializeMenu(){
+
+            menuOne.addLayerMenu(0);
+            menuOne.addElementToMenu(0,"1. Warehouse");
+            menuOne.addElementToMenu(0,"2. Formulas");
+            menuOne.addElementToMenu(0,"3. Purchase ");
+            menuOne.addElementToMenu(0,"4. Report");
+            menuOne.addElementToMenu(0,"5. Exit" );
+            menuOne.addLayerMenu(1);
+            menuOne.addElementToMenu(1,"1. Check Status");
+            menuOne.addElementToMenu(1,"2. Create Supply Storage");
+            menuOne.addElementToMenu(1,"3. Add to Supply ");
+            menuOne.addElementToMenu(1,"4. Delete Supply Storage");
+            menuOne.addElementToMenu(1,"5. Back");
+            menuOne.addLayerMenu(2);
+            menuOne.addElementToMenu(2,"1. Check Status");
+            menuOne.addElementToMenu(2,"2. Create Formula");
+            menuOne.addElementToMenu(2,"3. Delete Formula ");
+            menuOne.addElementToMenu(2,"4. Back");
+            menuOne.addLayerMenu(3);
+            menuOne.addElementToMenu(3,"1. Check Availability");
+            menuOne.addElementToMenu(3,"2. Purchase");
+            menuOne.addElementToMenu(3,"3. Back");
         }
 //
 //        static boolean checkExistence (String formulaName,int quantity){
